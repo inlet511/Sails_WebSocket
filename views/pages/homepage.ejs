@@ -1,0 +1,38 @@
+<input type="text" id="content" />
+<button id="send">Send</button>
+<br />
+<button id="gettime">GetTime</button>
+<div id="time"></div>
+<script src="customjs/jquery-3.4.1.min.js"></script>
+<script src="customjs/sails.io.js"></script>
+<script>
+  $(document).ready(function() {
+    io.socket.on("connect", function(data) {
+      console.log("connected");
+    });
+
+    io.socket.post("/join", "", function(req, res) {
+      console.log(req);
+    });
+
+    io.socket.on("chat", function(data) {
+      console.log("RECEIVE from Chanel chat:" + data.info);
+		});
+		
+		io.socket.on("time", function(data){
+			$('#time').text(data.time);
+		});
+
+    $("button#send").click(function() {
+      io.socket.post("/chat", { info: $("#content").val() }, function(resData, jwres) {
+        console.log("resData:" + resData + "  status:" + jwres.statusCode);
+      });
+		});
+		
+		$("button#gettime").click(function(){
+			io.socket.post("/gettime",function(resData,jwres){
+				console.log("resData:" + resData + "  status:" + jwres.statusCode);
+			});
+		});
+  });
+</script>
